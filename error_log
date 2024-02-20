@@ -1,0 +1,31 @@
+[02-Jan-2023 05:38:22 UTC] PHP Fatal error:  Uncaught TypeError: Argument 1 passed to CodeIgniter\HTTP\URI::setScheme() must be of the type string, null given, called in /home2/collesgr/public_html/macedon/system/HTTP/IncomingRequest.php on line 403 and defined in /home2/collesgr/public_html/macedon/system/HTTP/URI.php:662
+Stack trace:
+#0 /home2/collesgr/public_html/macedon/system/HTTP/IncomingRequest.php(403): CodeIgniter\HTTP\URI->setScheme(NULL)
+#1 /home2/collesgr/public_html/macedon/system/HTTP/IncomingRequest.php(202): CodeIgniter\HTTP\IncomingRequest->setPath('/', Object(Config\App))
+#2 /home2/collesgr/public_html/macedon/system/HTTP/IncomingRequest.php(170): CodeIgniter\HTTP\IncomingRequest->detectURI('REQUEST_URI', 'collegeprojectz...')
+#3 /home2/collesgr/public_html/macedon/system/Config/Services.php(541): CodeIgniter\HTTP\IncomingRequest->__construct(Object(Config\App), Object(CodeIgniter\HTTP\URI), '', Object(CodeIgniter\HTTP\UserAgent))
+#4 /home2/collesgr/public_html/macedon/system/Config/Services.php(497): CodeIgniter\Config\Services::incom in /home2/collesgr/public_html/macedon/system/HTTP/URI.php on line 662
+[02-Jan-2023 05:38:28 UTC] PHP Fatal error:  Uncaught TypeError: Argument 1 passed to CodeIgniter\HTTP\URI::setScheme() must be of the type string, null given, called in /home2/collesgr/public_html/macedon/system/HTTP/IncomingRequest.php on line 403 and defined in /home2/collesgr/public_html/macedon/system/HTTP/URI.php:662
+Stack trace:
+#0 /home2/collesgr/public_html/macedon/system/HTTP/IncomingRequest.php(403): CodeIgniter\HTTP\URI->setScheme(NULL)
+#1 /home2/collesgr/public_html/macedon/system/HTTP/IncomingRequest.php(202): CodeIgniter\HTTP\IncomingRequest->setPath('/', Object(Config\App))
+#2 /home2/collesgr/public_html/macedon/system/HTTP/IncomingRequest.php(170): CodeIgniter\HTTP\IncomingRequest->detectURI('REQUEST_URI', 'collegeprojectz...')
+#3 /home2/collesgr/public_html/macedon/system/Config/Services.php(541): CodeIgniter\HTTP\IncomingRequest->__construct(Object(Config\App), Object(CodeIgniter\HTTP\URI), '', Object(CodeIgniter\HTTP\UserAgent))
+#4 /home2/collesgr/public_html/macedon/system/Config/Services.php(497): CodeIgniter\Config\Services::incom in /home2/collesgr/public_html/macedon/system/HTTP/URI.php on line 662
+[05-Jan-2023 04:56:58 America/Chicago] PHP Fatal error:  Cannot redeclare App\Controllers\Home::Vendor_registration() in /home2/collesgr/public_html/macedon/app/Controllers/Home.php on line 437
+[05-Jan-2023 04:57:11 America/Chicago] PHP Fatal error:  Cannot redeclare App\Controllers\Home::Vendor_registration() in /home2/collesgr/public_html/macedon/app/Controllers/Home.php on line 437
+[05-Jan-2023 04:57:13 America/Chicago] PHP Fatal error:  Cannot redeclare App\Controllers\Home::Vendor_registration() in /home2/collesgr/public_html/macedon/app/Controllers/Home.php on line 437
+[05-Jan-2023 04:57:17 America/Chicago] PHP Fatal error:  Cannot redeclare App\Controllers\Home::Vendor_registration() in /home2/collesgr/public_html/macedon/app/Controllers/Home.php on line 437
+[05-Jan-2023 04:57:37 America/Chicago] PHP Fatal error:  Cannot redeclare App\Controllers\Home::Vendor_registration() in /home2/collesgr/public_html/macedon/app/Controllers/Home.php on line 437
+[13-Jan-2023 00:27:23 America/Chicago] PHP Fatal error:  Cannot redeclare App\Controllers\Admin::Delete_city() in /home2/collesgr/public_html/macedon/app/Controllers/Admin.php on line 2205
+[13-Jan-2023 00:27:27 America/Chicago] PHP Fatal error:  Cannot redeclare App\Controllers\Admin::Delete_city() in /home2/collesgr/public_html/macedon/app/Controllers/Admin.php on line 2205
+[13-Jan-2023 00:27:30 America/Chicago] PHP Fatal error:  Cannot redeclare App\Controllers\Admin::Delete_city() in /home2/collesgr/public_html/macedon/app/Controllers/Admin.php on line 2205
+[13-Jan-2023 00:27:31 America/Chicago] PHP Fatal error:  Cannot redeclare App\Controllers\Admin::Delete_city() in /home2/collesgr/public_html/macedon/app/Controllers/Admin.php on line 2205
+[20-Jan-2023 00:10:00 America/Chicago] PHP Fatal error:  Cannot redeclare App\Models\AdminModel::package() in /home2/collesgr/public_html/macedon/app/Models/AdminModel.php on line 51
+[20-Jan-2023 00:10:06 America/Chicago] PHP Fatal error:  Cannot redeclare App\Models\AdminModel::package() in /home2/collesgr/public_html/macedon/app/Models/AdminModel.php on line 51
+[20-Jan-2023 00:10:25 America/Chicago] PHP Fatal error:  Cannot redeclare App\Models\AdminModel::package() in /home2/collesgr/public_html/macedon/app/Models/AdminModel.php on line 51
+[08-Aug-2023 05:25:09 America/Chicago] PHP Fatal error:  Cannot redeclare App\Controllers\Admin::Ambulance() in /home2/collesgr/public_html/MCL/app/Controllers/Admin.php on line 1249
+[11-Aug-2023 06:44:07 America/Chicago] PHP Fatal error:  Cannot use empty array elements in arrays in /home2/collesgr/public_html/MCL/app/Controllers/Admin.php on line 713
+[11-Aug-2023 06:44:52 America/Chicago] PHP Fatal error:  Cannot use empty array elements in arrays in /home2/collesgr/public_html/MCL/app/Controllers/Admin.php on line 713
+[11-Aug-2023 06:45:53 America/Chicago] PHP Fatal error:  Cannot use empty array elements in arrays in /home2/collesgr/public_html/MCL/app/Controllers/Admin.php on line 713
+[12-Aug-2023 05:45:26 America/Chicago] PHP Fatal error:  Cannot redeclare App\Controllers\Admin::Insertmemberform() in /home2/collesgr/public_html/MCL/app/Controllers/Admin.php on line 1753
