@@ -1,4 +1,5 @@
 <?php
+
 namespace Config;
 
 // Create a new instance of our RouteCollection class.
@@ -24,7 +25,7 @@ $routes->set404Override();
 // where controller filters or CSRF protection are bypassed.
 // If you don't want to define all routes, please use the Auto Routing (Improved).
 // Set `$autoRoutesImproved` to true in `app/Config/Feature.php` and set the following to true.
- $routes->setAutoRoute(true);
+$routes->setAutoRoute(true);
 
 /*
  * --------------------------------------------------------------------
@@ -65,22 +66,16 @@ $routes->post('/Partner/login', 'Partner::loginAuth');
 
 
 // API routes Start 
-$routes->post('api/register','ApiController::register');
-$routes->post('api/sendOtpForLogin','ApiController::sendOtpForLogin');
-$routes->post('api/verifyOtpForLogin','ApiController::verifyOtpForLogin');
-$routes->get('api/masterData','ApiController::masterData');
-$routes->get('api/checkApi','ApiController::index');
-
-
-
-// $routes->get('api/news/new',             'News::new');
-// $routes->post('api/news',                'News::create');
-// $routes->get('api/news',                 'News::index');
-// $routes->get('api/news/(:segment)',      'News::show/$1');
-// $routes->get('api/news/(:segment)/edit', 'News::edit/$1');
-// $routes->put('api/news/(:segment)',      'News::update/$1');
-// $routes->patch('api/news/(:segment)',    'News::update/$1');
-// $routes->delete('api/news/(:segment)',   'News::delete/$1');
+$routes->get('api/checkApi', 'ApiController::index');
+$routes->get('api/masterData', 'ApiController::masterData');
+$routes->post('api/register', 'ApiController::register');
+$routes->post('api/sendOtpForLogin', 'ApiController::sendOtpForLogin');
+$routes->post('api/verifyOtpForLogin', 'ApiController::verifyOtpForLogin');
+$routes->post('api/updateProfile', 'ApiController::updateProfile');
+$routes->post('api/updatePassword', 'ApiController::updatePassword');
+$routes->post('api/createPost', 'ApiController::createPost');
+$routes->get('api/getGeneralPost', 'ApiController::getGeneralPost');
+$routes->get('api/getPresidentPost', 'ApiController::getPresidentPost');
 
 
 

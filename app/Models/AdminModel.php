@@ -19,6 +19,43 @@ class AdminModel extends Model
 		return $builder->get()->getResult();
 	}
 
+	function checkUserEsino($esi_no)
+	{
+		$builder = $this->db->table('user');
+		$builder->select('*');
+		$builder->where('eis_no', $esi_no);
+		return $builder->get()->getResult();
+	}
+
+	function createPost($data)
+	{
+		$query = $this->db->table('post')->insert($data);
+		return $this->db->insertID();
+		
+	}
+
+	function inserPostImage($data)
+	{
+		$query = $this->db->table('post_image')->insert($data);
+		return $query;
+	}
+
+	function inserPostVideo($data)
+	{
+		$query = $this->db->table('post_video')->insert($data);
+		return $query;
+	}
+
+	function getPost($type)
+	{
+		$builder = $this->db->table('post');
+		$builder->select('*');
+		$builder->join('post_image', 'post_image.post_id=post.id');
+		$builder->join('post_video', 'post_video.post_id=post.id');
+		$builder->where('post_type', $type);
+		return $builder->get()->getResult();
+	}
+
 
 
 	function Settingdata()

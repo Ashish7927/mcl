@@ -34,6 +34,11 @@ class ApiController extends ResourceController
     {
         $department = $this->AdminModel->Department();
         $designation = $this->AdminModel->Designation();
+        $City = $this->AdminModel->City();
+        $Company = $this->AdminModel->Company();
+        $Union = $this->AdminModel->Union();
+        $Unionposition = $this->AdminModel->Unionposition();
+
 
         $response = [
             'status'   => 200,
@@ -42,6 +47,11 @@ class ApiController extends ResourceController
                 'message' => 'Here is the all master data',
                 'department' => $department,
                 'designation' => $designation,
+                'city' => $City,
+                'company' => $Company,
+                'union' => $Union,
+                'unionposition' => $Unionposition,
+
             ],
         ];
 
@@ -55,24 +65,33 @@ class ApiController extends ResourceController
             $data = $this->AdminModel->checkUserPahone($phone);
             if (!empty($data) && $data != null) {
 
-                //Send otp
+                if ($data[0]->status == 1) {
+                    //Send otp
+                    $otp = rand(100000, 999999);
+                    $updateotp = [
+                        'otp' => $otp
+                    ];
 
-                $otp = rand(100000, 999999);
-                $updateotp = [
-                    'otp' => $otp
-                ];
-
-                $data = $this->AdminModel->UpdateProfile($updateotp, $data[0]->id);
+                    $data = $this->AdminModel->UpdateProfile($updateotp, $data[0]->id);
 
 
-                $response = [
-                    'status'   => 200,
-                    'error'    => null,
-                    'response' => [
-                        'message' => 'Otp send successfully!',
-                        'otp' => $otp,
-                    ],
-                ];
+                    $response = [
+                        'status'   => 200,
+                        'error'    => null,
+                        'response' => [
+                            'message' => 'Otp send successfully!',
+                            'otp' => $otp,
+                        ],
+                    ];
+                } else {
+                    $response = [
+                        'status'   => 200,
+                        'error'    => 1,
+                        'response' => [
+                            'message' => 'Your account is not Active, Please contact to Admin!'
+                        ]
+                    ];
+                }
             } else {
                 $response = [
                     'status'   => 200,
@@ -105,12 +124,22 @@ class ApiController extends ResourceController
                 //verify otp
                 $actuallOtp = $data[0]->otp;
                 if ($otp == $actuallOtp) {
+
+                    $profileStatus = 0;
+                    if ($data[0]->password != NULL || $data[0]->password != '') {
+                        $profileStatus = 1;
+                    }
+
+                    if ($data[0]->adhar_no != NULL || $data[0]->adhar_no != '') {
+                        $profileStatus = 2;
+                    }
                     $response = [
                         'status'   => 201,
                         'error'    => null,
                         'response' => [
                             'success' => 'OTP matched',
                             'userDetails' => $data,
+                            'profile_status' => $profileStatus
                         ],
                     ];
                 } else {
@@ -148,6 +177,7 @@ class ApiController extends ResourceController
         $rules = [
             'name' => 'required|min_length[3]',
             'wp_no' => 'required|numeric|exact_length[10]|is_unique[user.contact_no]',
+            'email' => 'required|is_unique[user.email]',
             'eis_no' => 'required|numeric|exact_length[8]|is_unique[user.eis_no]',
             'department_id' => 'required|numeric',
             'designation_id' => 'required|numeric',
@@ -164,6 +194,7 @@ class ApiController extends ResourceController
             ];
         } else {
 
+            $email = $this->request->getVar('email');
             $name = $this->request->getVar('name');
             $eis_no = $this->request->getVar('eis_no');
             $department_id = $this->request->getVar('department_id');
@@ -171,33 +202,29 @@ class ApiController extends ResourceController
             $wp_no = $this->request->getVar('wp_no');
             $designation_id = $this->request->getVar('designation_id');
 
-            // $file = $this->request->getFile('image');
-            // if ($file->isValid() && !$file->hasMoved()) {
-            //     $imagename = $file->getRandomName();
-            //     $file->move('uploads/', $imagename);
-            // } else {
-            //     $imagename = "";
-            // }
-
             $img = $this->request->getPost('profile_image');
-            $img = str_replace('data:image/png;base64,', '', $img);
-            $img = str_replace('data:image/jpeg;base64,', '', $img);
-            $img = str_replace(' ', '+', $img);
-            $file_data = base64_decode($img);
-            $image_name = md5(uniqid(rand(), true));
-            $filename = $image_name . '.' . 'png';
-            $path = 'upload/blog/';
-            file_put_contents($path . $filename, $file_data);
+            $filename = '';
+            if ($img) {
+                $img = str_replace('data:image/png;base64,', '', $img);
+                $img = str_replace('data:image/jpeg;base64,', '', $img);
+                $img = str_replace(' ', '+', $img);
+                $file_data = base64_decode($img);
+                $image_name = md5(uniqid(rand(), true));
+                $filename = $image_name . '.' . 'png';
+                $path = 'upload/';
+                file_put_contents($path . $filename, $file_data);
+            }
 
             $data_array = [
                 'full_name' => $name,
+                'email' => $email,
                 'contact_no' => $wp_no,
                 'eis_no' => $eis_no,
                 'member_desgn_id' => $designation_id,
                 'member_dept_id' => $department_id,
                 'joining_date' => date('Y-m-d'),
                 'user_name' => strtolower(str_replace(' ', '_', $name)),
-                'address1' => $area,
+                'area_id' => $area,
                 'status' => 0,
                 'profile_image' => $filename,
                 'user_type' => 2,
@@ -226,70 +253,317 @@ class ApiController extends ResourceController
         return $this->respondCreated($response);
     }
 
+    public function updatePassword()
+    {
+        $rules = [
+            'esi_no' => 'required|numeric|exact_length[8]',
+            'password' => 'required'
+        ];
+        if (!$this->validate($rules)) {
+            $response = [
+                'status'   => 200,
+                'error'    => 1,
+                'response' => [
+                    'message' => $this->validator->getErrors()
+                ]
+            ];
+        } else {
+            $esi_no = $this->request->getVar('esi_no');
+            $data = $this->AdminModel->checkUserEsino($esi_no);
+            if (!empty($data) && $data != null) {
+
+                $password = $this->request->getVar('password');
+                $updatepassword = [
+                    'password' => base64_encode(base64_encode($password))
+                ];
+                $result = $this->AdminModel->UpdateProfile($updatepassword, $data[0]->id);
+                if ($result) {
+                    $response = [
+                        'status'   => 200,
+                        'error'    => null,
+                        'response' => [
+                            'success' => 'Password updated Successfully'
+                        ],
+                    ];
+                } else {
+                    $response = [
+                        'status'   => 200,
+                        'error'    => 1,
+                        'response' => [
+                            'message' => 'Password updated failed!, Something went wrong.'
+                        ]
+                    ];
+                }
+            } else {
+                $response = [
+                    'status'   => 200,
+                    'error'    => 1,
+                    'response' => [
+                        'message' => 'Invalid ESI No'
+                    ]
+                ];
+            }
+        }
+        return $this->respondCreated($response);
+    }
+
+    public function updateProfile()
+    {
+
+        $rules = [
+            'adhar_no' => 'required|numeric',
+            'user_id' => 'required|numeric'
+        ];
+        if (!$this->validate($rules)) {
+            $response = [
+                'status'   => 200,
+                'error'    => 1,
+                'response' => [
+                    'message' => $this->validator->getErrors()
+                ]
+            ];
+        } else {
+
+            $user_id = $this->request->getVar('user_id');
+            $userDtls = $this->AdminModel->userdata($user_id);
+            if (!empty($userDtls) && $userDtls != null) {
+                $dob = $this->request->getVar('dob');
+                $blood_group = $this->request->getVar('blood_group');
+                $adhar_no = $this->request->getVar('adhar_no');
+                $joining_date = $this->request->getVar('joining_date');
+                $marital_status = $this->request->getVar('marital_status');
+                $spouse_name = $this->request->getVar('spouse_name');
+                $no_of_children = $this->request->getVar('no_of_children');
+                $address1 = $this->request->getVar('address');
+                $gender = $this->request->getVar('gender');
+                $alter_number = $this->request->getVar('alter_number');
+                $office_name = $this->request->getVar('office_name');
+                $office_location = $this->request->getVar('office_location');
+                $office_union = $this->request->getVar('office_union');
+                $position_in_union = $this->request->getVar('position_in_union');
 
 
 
-    // // create
-    // public function create() {
-    //     $model = new EmployeeModel();
-    //     $data = [
-    //         'name' => $this->request->getVar('name'),
-    //         'email'  => $this->request->getVar('email'),
-    //     ];
-    //     $model->insert($data);
-    //     $response = [
-    //       'status'   => 201,
-    //       'error'    => null,
-    //       'response' => [
-    //           'success' => 'Employee created successfully'
-    //       ]
-    //   ];
-    //   return $this->respondCreated($response);
-    // }
-    // // single user
-    // public function show($id = null){
-    //     $model = new EmployeeModel();
-    //     $data = $model->where('id', $id)->first();
-    //     if($data){
-    //         return $this->respond($data);
-    //     }else{
-    //         return $this->failNotFound('No employee found');
-    //     }
-    // }
-    // // update
-    // public function update($id = null){
-    //     $model = new EmployeeModel();
-    //     $id = $this->request->getVar('id');
-    //     $data = [
-    //         'name' => $this->request->getVar('name'),
-    //         'email'  => $this->request->getVar('email'),
-    //     ];
-    //     $model->update($id, $data);
-    //     $response = [
-    //       'status'   => 200,
-    //       'error'    => null,
-    //       'response' => [
-    //           'success' => 'Employee updated successfully'
-    //       ]
-    //   ];
-    //   return $this->respond($response);
-    // }
-    // // delete
-    // public function delete($id = null){
-    //     $model = new EmployeeModel();
-    //     $data = $model->where('id', $id)->delete($id);
-    //     if($data){
-    //         $model->delete($id);
-    //         $response = [
-    //             'status'   => 200,
-    //             'error'    => null,
-    //             'response' => [
-    //                 'success' => 'Employee successfully deleted'
-    //             ]
-    //         ];
-    //         return $this->respondDeleted($response);
-    //     }else{
-    //         return $this->failNotFound('No employee found');
-    //     }
-    // }
+                $img = $this->request->getPost('profile_image');
+                if ($img) {
+                    $img = str_replace('data:image/png;base64,', '', $img);
+                    $img = str_replace('data:image/jpeg;base64,', '', $img);
+                    $img = str_replace(' ', '+', $img);
+                    $file_data = base64_decode($img);
+                    $image_name = md5(uniqid(rand(), true));
+                    $filename = $image_name . '.' . 'png';
+                    $path = 'upload/blog/';
+                    file_put_contents($path . $filename, $file_data);
+                    $updateImage = [
+                        'profile_image' => $filename
+                    ];
+
+                    $data = $this->AdminModel->UpdateProfile($updateImage, $user_id);
+                }
+
+                $data_array = [
+                    'dob' => $dob,
+                    'blood_group' => $blood_group,
+                    'adhar_no' => $adhar_no,
+                    'joining_dateinbranchoffice' => $joining_date,
+                    'marital_status' => $marital_status,
+                    'spouse_name' => $spouse_name,
+                    'no_of_children' => $no_of_children,
+                    'address1' => $address1,
+                    'gender' => $gender,
+                    'alter_cnum' => $alter_number,
+                    'office_name' => $office_name,
+                    'office_location' => $office_location,
+                    'office_union' => $office_union,
+                    'position_in_union' => $position_in_union,
+                ];
+
+                $result = $this->AdminModel->UpdateProfile($data_array, $user_id);
+                if ($result) {
+                    $response = [
+                        'status'   => 201,
+                        'error'    => null,
+                        'response' => [
+                            'success' => 'User profile updated Successfully'
+                        ],
+                    ];
+                } else {
+                    $response = [
+                        'status'   => 200,
+                        'error'    => 1,
+                        'response' => [
+                            'message' => 'update failed!, Something went wrong.'
+                        ]
+                    ];
+                }
+            } else {
+                $response = [
+                    'status'   => 200,
+                    'error'    => 1,
+                    'response' => [
+                        'message' => 'User not found!'
+                    ]
+                ];
+            }
+        }
+        return $this->respondCreated($response);
+    }
+
+    public function createPost()
+    {
+        $rules = [
+            'user_id' => 'required|numeric',
+            'content' => 'required',
+            'post_type' => 'required|numeric'
+        ];
+        if (!$this->validate($rules)) {
+            $response = [
+                'status'   => 200,
+                'error'    => 1,
+                'response' => [
+                    'message' => $this->validator->getErrors()
+                ]
+            ];
+        } else {
+            $user_id = $this->request->getVar('user_id');
+            $userDtls = $this->AdminModel->userdata($user_id);
+            if (!empty($userDtls) && $userDtls != null) {
+
+                $content = $this->request->getVar('content');
+                $post_type = $this->request->getVar('post_type');
+                $data_array = [
+                    'post_content' => $content,
+                    'user_id' => $user_id,
+                    'post_type' => $post_type,
+                    'status' => 1
+                ];
+                $insert_id = $this->AdminModel->createPost($data_array);
+
+                $images = $this->request->getPost('post_images');
+                if (is_array($images)) {
+                    if (count($videos) > 3) {
+                        $response = [
+                            'status'   => 200,
+                            'error'    => 1,
+                            'response' => [
+                                'message' => 'number of image upload limit exceed'
+                            ]
+                        ];
+                        return $this->respondCreated($response);
+                    }
+                    foreach ($images as $img) {
+                        $filename = '';
+                        if ($img) {
+                            $img = str_replace('data:image/png;base64,', '', $img);
+                            $img = str_replace('data:image/jpeg;base64,', '', $img);
+                            $img = str_replace(' ', '+', $img);
+                            $file_data = base64_decode($img);
+                            $image_name = md5(uniqid(rand(), true));
+                            $filename = $image_name . '.' . 'png';
+                            $path = 'upload/post/';
+                            file_put_contents($path . $filename, $file_data);
+
+                            $imageData = [
+                                'post_id' => $insert_id,
+                                'image_name' => $filename,
+                                'image_path' => 'upload/post/'
+                            ];
+                            $result = $this->AdminModel->inserPostImage($imageData);
+                        }
+                    }
+                }
+
+                $videos = $this->request->getPost('post_videos');
+                if (is_array($videos)) {
+                    if (count($videos) > 3) {
+                        $response = [
+                            'status'   => 200,
+                            'error'    => 1,
+                            'response' => [
+                                'message' => 'number of Video upload limit exceed'
+                            ]
+                        ];
+                        return $this->respondCreated($response);
+                    }
+                    foreach ($videos as $vdo) {
+                        $filename = '';
+                        if ($vdo) {
+                            $vdo = str_replace('data:image/png;base64,', '', $vdo);
+                            $vdo = str_replace('data:image/jpeg;base64,', '', $vdo);
+                            $vdo = str_replace(' ', '+', $vdo);
+                            $file_data = base64_decode($vdo);
+                            $image_name = md5(uniqid(rand(), true));
+                            $filename = $image_name . '.' . 'mp4';
+                            $path = 'upload/post/';
+                            file_put_contents($path . $filename, $file_data);
+
+                            $videoData = [
+                                'post_id' => $insert_id,
+                                'video_file' => $filename,
+                                'video_path' => 'upload/post/'
+                            ];
+                            $result = $this->AdminModel->inserPostVideo($videoData);
+                        }
+                    }
+                }
+
+                if ($insert_id) {
+                    $response = [
+                        'status'   => 201,
+                        'error'    => null,
+                        'response' => [
+                            'success' => 'Post created Successfully'
+                        ],
+                    ];
+                } else {
+                    $response = [
+                        'status'   => 200,
+                        'error'    => 1,
+                        'response' => [
+                            'message' => 'Post creation failed!, Something went wrong.'
+                        ]
+                    ];
+                }
+            } else {
+                $response = [
+                    'status'   => 200,
+                    'error'    => 1,
+                    'response' => [
+                        'message' => 'User not found!'
+                    ]
+                ];
+            }
+        }
+        return $this->respondCreated($response);
+    }
+
+    public function getGeneralPost()
+    {
+        $Posts = $this->AdminModel->getPost(1);
+        $response = [
+            'status'   => 200,
+            'error'    => null,
+            'response' => [
+                'message' => 'Here is the all general post data',
+                'Posts' => $Posts,
+
+            ],
+        ];
+        return $this->respondCreated($response);
+    }
+
+    public function getPresidentPost()
+    {
+        $Posts = $this->AdminModel->getPost(2);
+        $response = [
+            'status'   => 200,
+            'error'    => null,
+            'response' => [
+                'message' => 'Here is the all president post data',
+                'Posts' => $Posts,
+
+            ],
+        ];
+        return $this->respondCreated($response);
+    }
 }
