@@ -224,7 +224,7 @@ class ApiController extends ResourceController
                 'member_dept_id' => $department_id,
                 'joining_date' => date('Y-m-d'),
                 'user_name' => strtolower(str_replace(' ', '_', $name)),
-                'area_id' => $area,
+                'city_id' => $area,
                 'status' => 0,
                 'profile_image' => $filename,
                 'user_type' => 2,
@@ -564,6 +564,174 @@ class ApiController extends ResourceController
 
             ],
         ];
+        return $this->respondCreated($response);
+    }
+
+    public function memeberListForApproval()
+    {
+        $memeberList = $this->AdminModel->GetAllUserList(2);
+
+        $response = [
+            'status'   => 200,
+            'error'    => null,
+            'response' => [
+                'message' => 'Here is the all memeber data for approveal',
+                'memeberList' => $memeberList
+            ],
+        ];
+
+        return $this->respondCreated($response);
+    }
+
+    public function approveMemebr()
+    {
+        $rules = [
+            'memeber_id' => 'required|numeric',
+            'user_id' => 'required|numeric'
+        ];
+        if (!$this->validate($rules)) {
+            $response = [
+                'status'   => 200,
+                'error'    => 1,
+                'response' => [
+                    'message' => $this->validator->getErrors()
+                ]
+            ];
+        } else {
+            $user_id = $this->request->getVar('user_id');
+            $userDtls = $this->AdminModel->userdata($user_id);
+            if (!empty($userDtls) && $userDtls != null && $userDtls[0]->user_type != 1) {
+
+                $memeber_id = $this->request->getVar('memeber_id');
+                $updateStatus = [
+                    'status' => 1
+                ];
+                $result = $this->AdminModel->UpdateProfile($updateStatus, $memeber_id);
+                if ($result) {
+                    $response = [
+                        'status'   => 200,
+                        'error'    => null,
+                        'response' => [
+                            'success' => 'Member approved Successfully'
+                        ],
+                    ];
+                } else {
+                    $response = [
+                        'status'   => 200,
+                        'error'    => 1,
+                        'response' => [
+                            'message' => 'Member approved failed!, Something went wrong.'
+                        ]
+                    ];
+                }
+            } else {
+                $response = [
+                    'status'   => 200,
+                    'error'    => 1,
+                    'response' => [
+                        'message' => 'Invalid user_id'
+                    ]
+                ];
+            }
+        }
+        return $this->respondCreated($response);
+    }
+
+    public function globalMemberList()
+    {
+        $memeberList = $this->AdminModel->GetAllActiveUserList(2);
+
+        $response = [
+            'status'   => 200,
+            'error'    => null,
+            'response' => [
+                'message' => 'Here is the all member data',
+                'memeberList' => $memeberList
+            ],
+        ];
+
+        return $this->respondCreated($response);
+    }
+
+    public function localMemberList()
+    {
+        $rules = [
+            'user_id' => 'required|numeric'
+        ];
+        if (!$this->validate($rules)) {
+            $response = [
+                'status'   => 200,
+                'error'    => 1,
+                'response' => [
+                    'message' => $this->validator->getErrors()
+                ]
+            ];
+        } else {
+            $user_id = $this->request->getVar('user_id');
+            $userDtls = $this->AdminModel->userdata($user_id);
+            if (!empty($userDtls) && $userDtls != null && $userDtls[0]->city_id != '') {
+
+                $memeberList = $this->AdminModel->getLocalMember($userDtls[0]->city_id);
+
+                $response = [
+                    'status'   => 200,
+                    'error'    => null,
+                    'response' => [
+                        'success' => 'Here is the all local member',
+                        'memeberList' => $memeberList
+                    ],
+                ];
+            } else {
+                $response = [
+                    'status'   => 200,
+                    'error'    => 1,
+                    'response' => [
+                        'message' => 'Invalid user_id'
+                    ]
+                ];
+            }
+        }
+        return $this->respondCreated($response);
+    }
+
+    public function getProfileDetails()
+    {
+        $rules = [
+            'user_id' => 'required|numeric'
+        ];
+        if (!$this->validate($rules)) {
+            $response = [
+                'status'   => 200,
+                'error'    => 1,
+                'response' => [
+                    'message' => $this->validator->getErrors()
+                ]
+            ];
+        } else {
+            $user_id = $this->request->getVar('user_id');
+            $userDtls = $this->AdminModel->userdata($user_id);
+            if (!empty($userDtls) && $userDtls != null) {
+
+                $profileDetails = $this->AdminModel->getProfileDetails($user_id);
+
+                $response = [
+                    'status'   => 200,
+                    'error'    => null,
+                    'response' => [
+                        'success' => 'Here is the all local member',
+                        'profileDetails' => $profileDetails
+                    ],
+                ];
+            } else {
+                $response = [
+                    'status'   => 200,
+                    'error'    => 1,
+                    'response' => [
+                        'message' => 'User not found'
+                    ]
+                ];
+            }
+        }
         return $this->respondCreated($response);
     }
 }

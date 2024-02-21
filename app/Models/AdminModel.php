@@ -31,7 +31,6 @@ class AdminModel extends Model
 	{
 		$query = $this->db->table('post')->insert($data);
 		return $this->db->insertID();
-		
 	}
 
 	function inserPostImage($data)
@@ -56,6 +55,19 @@ class AdminModel extends Model
 		return $builder->get()->getResult();
 	}
 
+	function annualLeaveData()
+	{
+		$builder = $this->db->table('leave_setting');
+		$builder->select('*');
+		$builder->where('id', 1);
+		return $builder->get()->getResult();
+	}
+
+	function UpdateAnnualLeave($data, $settingid)
+	{
+		$query = $this->db->table('leave_setting')->update($data, array('id' => $settingid));
+		return $query;
+	}
 
 
 	function Settingdata()
@@ -263,12 +275,70 @@ class AdminModel extends Model
 		$builder->join('union', 'union.union_id=union_position.upunion_id');
 		return $builder->get()->getResult();
 	}
+
+	function GetAllUserList($user_type)
+	{
+		$builder = $this->db->table('user');
+		$builder->select('*');
+		$builder->join('city', 'city.city_id=user.city_id');
+		$builder->join('department', 'department.department_id=user.member_dept_id');
+		$builder->join('designation', 'designation.designation_id=user.member_desgn_id');
+		$builder->where('user_type', $user_type);
+		return $builder->get()->getResult();
+	}
+
+	function GetAllActiveUserList($user_type)
+	{
+		$builder = $this->db->table('user');
+		$builder->select('*');
+		$builder->join('city', 'city.city_id=user.city_id');
+		$builder->join('department', 'department.department_id=user.member_dept_id');
+		$builder->join('designation', 'designation.designation_id=user.member_desgn_id');
+		$builder->join('company', 'company.company_id=user.office_name');
+		$builder->join('union', 'union.union_id=user.office_union');
+		$builder->join('union_position', 'union_position.unposition_id =user.position_in_union');
+		$builder->where('user_type', $user_type);
+		$builder->where('status', 1);
+		return $builder->get()->getResult();
+	}
+
+	function getLocalMember($city_id)
+	{
+		$builder = $this->db->table('user');
+		$builder->select('*');
+		$builder->join('city', 'city.city_id=user.city_id');
+		$builder->join('department', 'department.department_id=user.member_dept_id');
+		$builder->join('designation', 'designation.designation_id=user.member_desgn_id');
+		$builder->join('company', 'company.company_id=user.office_name');
+		$builder->join('union', 'union.union_id=user.office_union');
+		$builder->join('union_position', 'union_position.unposition_id =user.position_in_union');
+		$builder->where('city_id', $city_id);
+		$builder->where('status', 1);
+		return $builder->get()->getResult();
+	}
+
+	function getProfileDetails($user_id)
+	{
+		$builder = $this->db->table('user');
+		$builder->select('*');
+		$builder->join('city', 'city.city_id=user.city_id');
+		$builder->join('department', 'department.department_id=user.member_dept_id');
+		$builder->join('designation', 'designation.designation_id=user.member_desgn_id');
+		$builder->join('company', 'company.company_id=user.office_name');
+		$builder->join('union', 'union.union_id=user.office_union');
+		$builder->join('union_position', 'union_position.unposition_id =user.position_in_union');
+		$builder->where('id', $user_id);
+		$builder->where('status', 1);
+		return $builder->get()->getResult();
+	}
+
+
 	function Getalluser($user_type)
 	{
 		$builder = $this->db->table('user');
 		$builder->select('*');
 		$builder->join('company', 'company.company_id=user.office_name');
-		$builder->join('city', 'city.city_id=user.office_location');
+		$builder->join('city', 'city.city_id=user.city_id');
 		$builder->join('union', 'union.union_id=user.office_union');
 		$builder->join('designation', 'designation.designation_id=user.member_desgn_id');
 		$builder->join('union_position', 'union_position.unposition_id =user.position_in_union');
@@ -373,7 +443,7 @@ class AdminModel extends Model
                       transferdetails.*');
 		$builder->join('company as from_company', 'from_company.company_id = user.office_name');
 		$builder->join('company as to_company', 'to_company.company_id = user.office_name');
-		$builder->join('city', 'city.city_id = user.office_location');
+		$builder->join('city', 'city.city_id = user.city_id');
 		$builder->join('union', 'union.union_id = user.office_union');
 		$builder->join('designation', 'designation.designation_id = user.member_desgn_id');
 		$builder->join('union_position', 'union_position.unposition_id = user.position_in_union');
@@ -460,7 +530,7 @@ class AdminModel extends Model
                       union.union_name, 
                       union_position.position_name');
 		$builder->join('company', 'company.company_id = user.office_name');
-		$builder->join('city', 'city.city_id = user.office_location');
+		$builder->join('city', 'city.city_id = user.city_id');
 		$builder->join('union', 'union.union_id = user.office_union');
 		$builder->join('designation as current_designation', 'current_designation.designation_id = user.member_desgn_id');
 		$builder->join('union_position', 'union_position.unposition_id = user.position_in_union');

@@ -36,6 +36,8 @@
                   
                   <li> <a href="<?php echo base_url(); ?>/admin/Member"><i class="gi gi-keys sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Manage Employee</span></a></li>
                   <li> <a href="<?php echo base_url(); ?>/admin/Cms_management"><i class="hi hi-edit sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">CMS Management</span></a></li>
+
+                  <li> <a href="<?php echo base_url(); ?>/admin/manageAnnualLeave"><i class="hi hi-calendar sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Annual Leave Management</span></a></li>
                  
                   <li> <a href="<?php echo base_url(); ?>/admin/Banner"><i class="gi gi-cargo sidebar-nav-icon"></i><span class="sidebar-nav-mini-hide">Banner Management</span></a> </li>
                   

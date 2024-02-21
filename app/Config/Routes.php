@@ -76,6 +76,14 @@ $routes->post('api/updatePassword', 'ApiController::updatePassword');
 $routes->post('api/createPost', 'ApiController::createPost');
 $routes->get('api/getGeneralPost', 'ApiController::getGeneralPost');
 $routes->get('api/getPresidentPost', 'ApiController::getPresidentPost');
+$routes->get('api/memeberListForApproval', 'ApiController::memeberListForApproval');
+$routes->post('api/approveMemebr', 'ApiController::approveMemebr');
+$routes->get('api/globalMemberList', 'ApiController::globalMemberList');
+$routes->post('api/localMemberList', 'ApiController::localMemberList');
+$routes->post('api/getProfileDetails', 'ApiController::getProfileDetails');
+
+
+
 
 
 
