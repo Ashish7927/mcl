@@ -31,35 +31,47 @@
               <!-- Sidebar Navigation -->
               <ul class="sidebar-nav">
                   <li><a href="<?php echo base_url(); ?>/admin/Dashboard"><i class="gi gi-stopwatch sidebar-nav-icon"></i><span class="sidebar-nav-mini-hide">Dashboard</span></a></li>
-                
+
                   <li> <a href="<?php echo base_url(); ?>/admin/Subadmin"><i class="gi gi-keys sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Manage Subadmin</span></a></li>
-                  
+
                   <li> <a href="<?php echo base_url(); ?>/admin/Member"><i class="gi gi-keys sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Manage Employee</span></a></li>
                   <li> <a href="<?php echo base_url(); ?>/admin/Cms_management"><i class="hi hi-edit sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">CMS Management</span></a></li>
 
-                  <li> <a href="<?php echo base_url(); ?>/admin/manageAnnualLeave"><i class="hi hi-calendar sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Annual Leave Management</span></a></li>
-                 
+                  <!-- <li> <a href="<?php echo base_url(); ?>/admin/manageAnnualLeave"><i class="hi hi-calendar sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Leave Management</span></a></li>
+                  <li> <a href="<?php echo base_url(); ?>/Admin/Holidaylist"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Holidaylist</span></a></li> -->
+
+                  <li>
+                      <a href="" class="sidebar-nav-menu">
+                          <i class="fa fa-angle-right sidebar-nav-indicator sidebar-nav-mini-hide"></i><i class="hi hi-calendar sidebar-nav-icon"></i><span class="sidebar-nav-mini-hide">Leave Management</span></a>
+                      <ul style="display: none;">
+                          <li> <a href="<?php echo base_url(); ?>/Admin/Holidaylist"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Manage Holiday</span></a></li>
+                          <li> <a href="<?php echo base_url(); ?>/Admin/manageAnnualLeave"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Manage Leave</span></a></li>
+                          <li> <a href="<?php echo base_url(); ?>/Admin/leaveList"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Memeber Leave List</span></a></li>
+                          <li> <a href="<?php echo base_url(); ?>/Admin/llList"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Memeber LL List</span></a></li>
+                      </ul>
+                  </li>
+
                   <li> <a href="<?php echo base_url(); ?>/admin/Banner"><i class="gi gi-cargo sidebar-nav-icon"></i><span class="sidebar-nav-mini-hide">Banner Management</span></a> </li>
-                  
+
                   <li> <a href="<?php echo base_url(); ?>/Admin/Office"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Create Office</span></a></li>
                   <!--<li> <a href="<?php echo base_url(); ?>/Admin/Branchoffice"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Create Branch Office</span></a></li>-->
                   <li> <a href="<?php echo base_url(); ?>/Admin/Transferlist"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Employee Transfer Request </span></a></li>
+                  <li> <a href="<?php echo base_url(); ?>/Admin/manageIdCard"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Employee Idcard Request </span></a></li>
                   <li> <a href="<?php echo base_url(); ?>/Admin/Exchangeemployee"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Exchange Office</span></a></li>
                   <li> <a href="<?php echo base_url(); ?>/Admin/Employeepromotion"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Employee Promotion Details</span></a></li>
-                   <li> <a href="<?php echo base_url(); ?>/Admin/Trainingdetails"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Training Details</span></a></li>
-                  
-                     <li>
+                  <li> <a href="<?php echo base_url(); ?>/Admin/Trainingdetails"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Training Details</span></a></li>
+
+                  <li>
                       <a href="" class="sidebar-nav-menu">
                           <i class="fa fa-angle-left sidebar-nav-indicator sidebar-nav-mini-hide"></i><i class="fa fa-database sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Service Group</span></a>
                       <ul style="display: none;">
                           <li> <a href="<?php echo base_url(); ?>/Admin/Ambulance"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Ambulance Service</span></a></li>
-                          
+
                           <li> <a href="<?php echo base_url(); ?>/Admin/Bloodbank"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Bloodbank Service</span></a></li>
-                           <li> <a href="<?php echo base_url(); ?>/Admin/Medical"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Medical Service</span></a></li>
-                           <li> <a href="<?php echo base_url(); ?>/Admin/Holidaylist"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Holidaylist</span></a></li>
+                          <li> <a href="<?php echo base_url(); ?>/Admin/Medical"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Medical Service</span></a></li>
                       </ul>
                   </li>
-                   <li>
+                  <li>
                       <a href="" class="sidebar-nav-menu">
                           <i class="fa fa-angle-left sidebar-nav-indicator sidebar-nav-mini-hide"></i><i class="fa fa-database sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Master Management</span></a>
                       <ul style="display: none;">
@@ -68,6 +80,7 @@
                           <li> <a href="<?php echo base_url(); ?>/Admin/City"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Manage City</span></a></li>
                           <li> <a href="<?php echo base_url(); ?>/Admin/Union"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Office Union</span></a></li>
                           <li> <a href="<?php echo base_url(); ?>/Admin/Position_union"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Position in Union Master</span></a></li>
+                          <li> <a href="<?php echo base_url(); ?>/Admin/Training"> <i class="fa fa-globe sidebar-nav-icon"></i> <span class="sidebar-nav-mini-hide">Training Master</span></a></li>
                       </ul>
                   </li>
               </ul>

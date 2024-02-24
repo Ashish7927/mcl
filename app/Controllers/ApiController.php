@@ -734,4 +734,474 @@ class ApiController extends ResourceController
         }
         return $this->respondCreated($response);
     }
+
+    public function getLeaveDetails()
+    {
+        $rules = [
+            'user_id' => 'required|numeric'
+        ];
+        if (!$this->validate($rules)) {
+            $response = [
+                'status'   => 200,
+                'error'    => 1,
+                'response' => [
+                    'message' => $this->validator->getErrors()
+                ]
+            ];
+        } else {
+            $user_id = $this->request->getVar('user_id');
+            $userDtls = $this->AdminModel->userdata($user_id);
+            if (!empty($userDtls) && $userDtls != null && $userDtls[0]->city_id != '') {
+
+                $annualLeaveDetails = $this->AdminModel->annualLeaveData();
+                $totalCltaken = $this->AdminModel->getTotalLeavyCategorywise($user_id, 'cl');
+                $totalEltaken = $this->AdminModel->getTotalLeavyCategorywise($user_id, 'el');
+                $totalHpltaken = $this->AdminModel->getTotalLeavyCategorywise($user_id, 'hpl');
+                $holiday = $this->AdminModel->Holiday();
+
+                $EL = $annualLeaveDetails[0]->no_of_el - $totalEltaken[0]->no_of_day;
+                $CL = $annualLeaveDetails[0]->no_of_cl - $totalCltaken[0]->no_of_day;
+                $HPL = $annualLeaveDetails[0]->no_of_hpl - $totalHpltaken[0]->no_of_day;
+                $LL = $this->AdminModel->getTotalLl($user_id);
+                $response = [
+                    'status'   => 200,
+                    'error'    => null,
+                    'response' => [
+                        'success' => 'Here is the all leave details',
+                        'remining_el' => $EL,
+                        'remining_cl' => $CL,
+                        'remining_hpl' => $HPL,
+                        'total_ll' => count($LL),
+                        'holiday' => $holiday
+                    ],
+                ];
+            } else {
+                $response = [
+                    'status'   => 200,
+                    'error'    => 1,
+                    'response' => [
+                        'message' => 'User not found'
+                    ]
+                ];
+            }
+        }
+        return $this->respondCreated($response);
+    }
+
+    public function addLeaveDetails()
+    {
+        $rules = [
+            'user_id' => 'required|numeric',
+            'leava_type' => 'required',
+            'start_date' => 'required|numeric',
+            'reason' => 'required',
+            'end_date' => 'required'
+
+        ];
+        if (!$this->validate($rules)) {
+            $response = [
+                'status'   => 200,
+                'error'    => 1,
+                'response' => [
+                    'message' => $this->validator->getErrors()
+                ]
+            ];
+        } else {
+            $user_id = $this->request->getVar('user_id');
+            $userDtls = $this->AdminModel->userdata($user_id);
+            if (!empty($userDtls) && $userDtls != null) {
+
+                $leava_type = $this->request->getVar('leava_type');
+                $start_date = $this->request->getVar('start_date');
+                $end_date = $this->request->getVar('end_date');
+                $reason = $this->request->getVar('reason');
+
+                $startDate = strtotime($start_date);
+                $endDate = strtotime($end_date);
+                $datediff = $endDate - $startDate;
+                $totalDay = round($datediff / (60 * 60 * 24));
+                $data_array = [
+                    'user_id' => $user_id,
+                    'leave_type' => $leava_type,
+                    'start_date' => $start_date,
+                    'end_date' => $end_date,
+                    'reason' => $reason,
+                    'no_of_day' => $totalDay,
+                    'status' => 1
+                ];
+                $result = $this->AdminModel->insertLeaveDetails($data_array);
+
+                if ($result) {
+                    $response = [
+                        'status'   => 201,
+                        'error'    => null,
+                        'response' => [
+                            'success' => 'Leave added Successfully'
+                        ],
+                    ];
+                } else {
+                    $response = [
+                        'status'   => 200,
+                        'error'    => 1,
+                        'response' => [
+                            'message' => 'Leave insertion failed!, Something went wrong.'
+                        ]
+                    ];
+                }
+            } else {
+                $response = [
+                    'status'   => 200,
+                    'error'    => 1,
+                    'response' => [
+                        'message' => 'User not found!'
+                    ]
+                ];
+            }
+        }
+        return $this->respondCreated($response);
+    }
+
+    public function addLl()
+    {
+        $rules = [
+            'user_id' => 'required|numeric',
+            'date' => 'required',
+            'remark' => 'required'
+        ];
+        if (!$this->validate($rules)) {
+            $response = [
+                'status'   => 200,
+                'error'    => 1,
+                'response' => [
+                    'message' => $this->validator->getErrors()
+                ]
+            ];
+        } else {
+            $user_id = $this->request->getVar('user_id');
+            $userDtls = $this->AdminModel->userdata($user_id);
+            if (!empty($userDtls) && $userDtls != null) {
+
+                $date = $this->request->getVar('date');
+
+                $remark = $this->request->getVar('remark');
+
+                $data_array = [
+                    'user_id' => $user_id,
+                    'date' => $date,
+                    'remark' => $remark,
+                    'status' => 1
+                ];
+                $result = $this->AdminModel->insertLlDetails($data_array);
+
+                if ($result) {
+                    $response = [
+                        'status'   => 201,
+                        'error'    => null,
+                        'response' => [
+                            'success' => 'LL added Successfully'
+                        ],
+                    ];
+                } else {
+                    $response = [
+                        'status'   => 200,
+                        'error'    => 1,
+                        'response' => [
+                            'message' => 'LL insertion failed!, Something went wrong.'
+                        ]
+                    ];
+                }
+            } else {
+                $response = [
+                    'status'   => 200,
+                    'error'    => 1,
+                    'response' => [
+                        'message' => 'User not found!'
+                    ]
+                ];
+            }
+        }
+        return $this->respondCreated($response);
+    }
+
+    public function requestIdCard()
+    {
+        $rules = [
+            'user_id' => 'required|numeric',
+            'remark' => 'required'
+        ];
+        if (!$this->validate($rules)) {
+            $response = [
+                'status'   => 200,
+                'error'    => 1,
+                'response' => [
+                    'message' => $this->validator->getErrors()
+                ]
+            ];
+        } else {
+            $user_id = $this->request->getVar('user_id');
+            $userDtls = $this->AdminModel->userdata($user_id);
+            if (!empty($userDtls) && $userDtls != null) {
+
+                $remark = $this->request->getVar('remark');
+                $data_array = [
+                    'user_id' => $user_id,
+                    'date_of_request' => date('Y-m-d'),
+                    'remark' => $remark,
+                    'status' => 0
+                ];
+                $result = $this->AdminModel->insertIdcardRequest($data_array);
+
+                if ($result) {
+                    $response = [
+                        'status'   => 201,
+                        'error'    => null,
+                        'response' => [
+                            'success' => 'Leave added Successfully'
+                        ],
+                    ];
+                } else {
+                    $response = [
+                        'status'   => 200,
+                        'error'    => 1,
+                        'response' => [
+                            'message' => 'Leave insertion failed!, Something went wrong.'
+                        ]
+                    ];
+                }
+            } else {
+                $response = [
+                    'status'   => 200,
+                    'error'    => 1,
+                    'response' => [
+                        'message' => 'User not found!'
+                    ]
+                ];
+            }
+        }
+        return $this->respondCreated($response);
+    }
+
+
+    public function applayTraining()
+    {
+        $rules = [
+            'user_id' => 'required|numeric',
+            'training_id' => 'required|numeric',
+            'training_date' => 'required',
+            'training_time' => 'required'
+        ];
+        if (!$this->validate($rules)) {
+            $response = [
+                'status'   => 200,
+                'error'    => 1,
+                'response' => [
+                    'message' => $this->validator->getErrors()
+                ]
+            ];
+        } else {
+            $user_id = $this->request->getVar('user_id');
+            $userDtls = $this->AdminModel->userdata($user_id);
+            if (!empty($userDtls) && $userDtls != null) {
+
+                $training_id = $this->request->getVar('training_id');
+                $training_date = $this->request->getVar('training_date');
+                $training_time = $this->request->getVar('training_time');
+                $remark = $this->request->getVar('remark');
+
+                $data_array = [
+                    'emp_id' => $user_id,
+                    'training_date' => $training_date,
+                    'training_time' => $training_time,
+                    'training_topic' => $training_id,
+                    'remark' => $remark,
+                    'training_status' => 0
+                ];
+                $result = $this->AdminModel->insertTraingRequest($data_array);
+
+                if ($result) {
+                    $response = [
+                        'status'   => 201,
+                        'error'    => null,
+                        'response' => [
+                            'success' => 'Training added Successfully'
+                        ],
+                    ];
+                } else {
+                    $response = [
+                        'status'   => 200,
+                        'error'    => 1,
+                        'response' => [
+                            'message' => 'Training insertion failed!, Something went wrong.'
+                        ]
+                    ];
+                }
+            } else {
+                $response = [
+                    'status'   => 200,
+                    'error'    => 1,
+                    'response' => [
+                        'message' => 'User not found!'
+                    ]
+                ];
+            }
+        }
+        return $this->respondCreated($response);
+    }
+
+    public function getUserTrainingHistory()
+    {
+        $rules = [
+            'user_id' => 'required|numeric'
+        ];
+        if (!$this->validate($rules)) {
+            $response = [
+                'status'   => 200,
+                'error'    => 1,
+                'response' => [
+                    'message' => $this->validator->getErrors()
+                ]
+            ];
+        } else {
+            $user_id = $this->request->getVar('user_id');
+            $userDtls = $this->AdminModel->userdata($user_id);
+            if (!empty($userDtls) && $userDtls != null) {
+
+                $trainingHistory = $this->AdminModel->getUserTraingHistory($user_id);
+
+                $response = [
+                    'status'   => 200,
+                    'error'    => null,
+                    'response' => [
+                        'success' => 'Here is the all local member',
+                        'trainingHistory' => $trainingHistory
+                    ],
+                ];
+            } else {
+                $response = [
+                    'status'   => 200,
+                    'error'    => 1,
+                    'response' => [
+                        'message' => 'User not found'
+                    ]
+                ];
+            }
+        }
+        return $this->respondCreated($response);
+    }
+
+    public function getAllTrainingHistory()
+    {
+        $trainingHistory = $this->AdminModel->Training();
+
+        $response = [
+            'status'   => 200,
+            'error'    => null,
+            'response' => [
+                'success' => 'Here is the all local member',
+                'trainingHistory' => $trainingHistory
+            ],
+        ];
+
+        return $this->respondCreated($response);
+    }
+
+    public function approveMemebrTraining()
+    {
+        $rules = [
+            'request_id' => 'required|numeric',
+            'user_id' => 'required|numeric'
+        ];
+        if (!$this->validate($rules)) {
+            $response = [
+                'status'   => 200,
+                'error'    => 1,
+                'response' => [
+                    'message' => $this->validator->getErrors()
+                ]
+            ];
+        } else {
+            $user_id = $this->request->getVar('user_id');
+            $userDtls = $this->AdminModel->userdata($user_id);
+            if (!empty($userDtls) && $userDtls != null && $userDtls[0]->user_type != 1) {
+
+                $training_id = $this->request->getVar('request_id');
+                $updateStatus = [
+                    'training_status' => 1
+                ];
+                $result = $this->AdminModel->UpdateTrainingDetails($updateStatus, $user_id);
+                if ($result) {
+                    $response = [
+                        'status'   => 200,
+                        'error'    => null,
+                        'response' => [
+                            'success' => 'Traing approved Successfully'
+                        ],
+                    ];
+                } else {
+                    $response = [
+                        'status'   => 200,
+                        'error'    => 1,
+                        'response' => [
+                            'message' => 'Traing approved failed!, Something went wrong.'
+                        ]
+                    ];
+                }
+            } else {
+                $response = [
+                    'status'   => 200,
+                    'error'    => 1,
+                    'response' => [
+                        'message' => 'Invalid user_id'
+                    ]
+                ];
+            }
+        }
+        return $this->respondCreated($response);
+    }
+
+    public function getCompanyServiceDetails()
+    {
+        $rules = [
+            'user_id' => 'required|numeric'
+        ];
+        if (!$this->validate($rules)) {
+            $response = [
+                'status'   => 200,
+                'error'    => 1,
+                'response' => [
+                    'message' => $this->validator->getErrors()
+                ]
+            ];
+        } else {
+            $user_id = $this->request->getVar('user_id');
+            $userDtls = $this->AdminModel->userdata($user_id);
+            if (!empty($office_name) && $userDtls != null && $office_name[0]->office_name != '') {
+
+                $ambulanceDetails = $this->AdminModel->getambulanceDetails($office_name[0]->office_name);
+                $bloodBankDetails = $this->AdminModel->getbloodBankDetails($office_name[0]->office_name);
+                $medicalDetails = $this->AdminModel->getmedicalDetails($office_name[0]->office_name);
+
+                $response = [
+                    'status'   => 200,
+                    'error'    => null,
+                    'response' => [
+                        'success' => 'Here is the all comapny services member',
+                        'ambulanceDetails' => $ambulanceDetails,
+                        'bloodBankDetails' => $bloodBankDetails,
+                        'medicalDetails' => $medicalDetails,
+
+                    ],
+                ];
+            } else {
+                $response = [
+                    'status'   => 200,
+                    'error'    => 1,
+                    'response' => [
+                        'message' => 'User not found'
+                    ]
+                ];
+            }
+        }
+        return $this->respondCreated($response);
+    }
 }

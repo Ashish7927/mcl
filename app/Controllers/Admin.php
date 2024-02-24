@@ -2296,6 +2296,54 @@ class Admin extends BaseController
 		}
 	}
 
+	function leaveList()
+	{
+		if ($this->session->get('user_id')) {
+
+			$user_id = $this->session->get('user_id');
+			$data['leaveList'] = $this->AdminModel->leaveList();
+			$data['setting'] = $this->AdminModel->Settingdata();
+			$data['singleuser'] = $this->AdminModel->userdata($user_id);
+
+
+			return view('admin/leave_list_vw', $data);
+		} else {
+			return redirect()->to('Admin/');
+		}
+	}
+
+	function llList()
+	{
+		if ($this->session->get('user_id')) {
+
+			$user_id = $this->session->get('user_id');
+			$data['llsList'] = $this->AdminModel->llList();
+			$data['setting'] = $this->AdminModel->Settingdata();
+			$data['singleuser'] = $this->AdminModel->userdata($user_id);
+
+
+			return view('admin/ll_list_vw', $data);
+		} else {
+			return redirect()->to('Admin/');
+		}
+	}
+
+	function manageIdCard()
+	{
+		if ($this->session->get('user_id')) {
+
+			$user_id = $this->session->get('user_id');
+			$data['request_list'] = $this->AdminModel->idcardRequestList();
+			$data['setting'] = $this->AdminModel->Settingdata();
+			$data['singleuser'] = $this->AdminModel->userdata($user_id);
+
+
+			return view('admin/idcard_request_list_vw', $data);
+		} else {
+			return redirect()->to('Admin/');
+		}
+	}
+
 	function Member_register()
 	{
 		if ($this->session->get('user_id')) {
@@ -2781,5 +2829,143 @@ class Admin extends BaseController
 		$holidayid = $this->request->getPost('user_id');
 		$this->db->table('holiday')->delete(array('holiday_id' => $holidayid));
 		return redirect()->to('Admin/Holidaylist');
+	}
+
+
+
+	function Training()
+	{
+		if ($this->session->get('user_id')) {
+
+			$user_id = $this->session->get('user_id');
+			$data['training'] = $this->AdminModel->getTraining();
+
+			$data['setting'] = $this->AdminModel->Settingdata();
+			$data['singleuser'] = $this->AdminModel->userdata($user_id);
+
+
+			return view('admin/training_vw', $data);
+		} else {
+			return redirect()->to('Admin/');
+		}
+	}
+	function insertTraining()
+	{
+		if ($this->session->get('user_id')) {
+
+			$user_id = $this->session->get('user_id');
+			$data['training'] = $this->AdminModel->getTraining();
+
+			$data['setting'] = $this->AdminModel->Settingdata();
+			$data['singleuser'] = $this->AdminModel->userdata($user_id);
+
+			$rules = [
+				'training_title' => 'required|is_unique[trainings.training_title]',
+				'training_desc' => 'required'
+			];
+
+			if ($this->validate($rules)) {
+				$training_title = $this->request->getPost('training_title');
+				$training_desc = $this->request->getPost('training_desc');
+
+				$data = [
+					'training_title' => $training_title,
+					'training_desc' => $training_desc,
+					'status' => 1
+				];
+
+				$this->db->table('trainings')->insert($data);
+				return redirect()->to('Admin/Training');
+			} else {
+				$data['validation'] = $this->validator;
+				return view('admin/training_vw', $data);
+			}
+		} else {
+			return redirect()->to('Admin/');
+		}
+	}
+	function editTraining()
+	{
+		if ($this->session->get('user_id')) {
+
+			$training_id = $this->request->getPost('training_id');
+			$training_title = $this->request->getPost('training_title');
+			$training_desc = $this->request->getPost('training_desc');
+
+			$countdesn = $this->db->query("SELECT * FROM trainings  where training_title='$training_title' and id !='$training_id' ")->getResult();
+			if (count($countdesn) == 0) {
+
+				$data = [
+					'training_title' => $training_title,
+					'training_desc' => $training_desc,
+				];
+				$this->db->table('trainings')->update($data, array('id' => $training_id));
+			} else {
+				$this->session->setFlashdata('msg', 'Training title  Already  exist.');
+				$this->session->setFlashdata('uid', $training_id);
+			}
+
+			return redirect()->to('Admin/Training');
+		} else {
+			return redirect()->to('Admin/');
+		}
+	}
+
+	function deleteTraining()
+	{
+		$training_id = $this->request->getPost('training_id');
+		$this->db->table('trainings')->delete(array('id' => $training_id));
+		return redirect()->to('Admin/Training');
+	}
+
+	function statusTraining()
+	{
+		if ($this->session->get('user_id')) {
+			$training_id  = $this->request->getPost('training_id');
+			$status = $this->request->getPost('status');
+
+			$data = [
+				'status'  => $status,
+			];
+
+			$this->db->table('trainings')->update($data, array('id' => $training_id));
+			return redirect()->to('Admin/Training');
+		} else {
+			return redirect()->to('Admin/');
+		}
+	}
+
+	function changeTrainingDetailsStatus()
+	{
+		if ($this->session->get('user_id')) {
+			$training_id  = $this->request->getPost('training_id');
+			$status = $this->request->getPost('status');
+
+			$data = [
+				'training_status'  => $status,
+			];
+
+			$this->db->table('trainingdetails')->update($data, array('training_id' => $training_id));
+			return redirect()->to('Admin/Trainingdetails');
+		} else {
+			return redirect()->to('Admin/');
+		}
+	}
+
+	function changeIdcardRequestStatus()
+	{
+		if ($this->session->get('user_id')) {
+			$request_id  = $this->request->getPost('request_id');
+			$status = $this->request->getPost('status');
+
+			$data = [
+				'status'  => $status,
+			];
+
+			$this->db->table('request_idcard')->update($data, array('training_id' => $request_id));
+			return redirect()->to('Admin/manageIdCard');
+		} else {
+			return redirect()->to('Admin/');
+		}
 	}
 }

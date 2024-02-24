@@ -82,6 +82,15 @@ $routes->get('api/globalMemberList', 'ApiController::globalMemberList');
 $routes->post('api/localMemberList', 'ApiController::localMemberList');
 $routes->post('api/getProfileDetails', 'ApiController::getProfileDetails');
 
+$routes->post('api/getLeaveDetails', 'ApiController::getLeaveDetails');
+$routes->post('api/addLeaveDetails', 'ApiController::addLeaveDetails');
+$routes->post('api/addLl', 'ApiController::addLl');
+$routes->post('api/requestIdCard', 'ApiController::requestIdCard');
+$routes->post('api/applayTraining', 'ApiController::applayTraining');
+$routes->post('api/getUserTrainingHistory', 'ApiController::getUserTrainingHistory');
+$routes->get('api/getAllTrainingHistory', 'ApiController::getAllTrainingHistory');
+$routes->post('api/approveMemebrTraining', 'ApiController::approveMemebrTraining');
+$routes->post('api/getCompanyServiceDetails', 'ApiController::getCompanyServiceDetails');
 
 
 

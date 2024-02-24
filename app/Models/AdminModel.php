@@ -33,6 +33,24 @@ class AdminModel extends Model
 		return $this->db->insertID();
 	}
 
+	function insertLeaveDetails($data)
+	{
+		$query = $this->db->table('leave_details')->insert($data);
+		return $query;
+	}
+
+	function insertLlDetails($data)
+	{
+		$query = $this->db->table('ll_details')->insert($data);
+		return $query;
+	}
+
+	function insertIdcardRequest($data)
+	{
+		$query = $this->db->table('request_idcard')->insert($data);
+		return $query;
+	}
+
 	function inserPostImage($data)
 	{
 		$query = $this->db->table('post_image')->insert($data);
@@ -42,6 +60,12 @@ class AdminModel extends Model
 	function inserPostVideo($data)
 	{
 		$query = $this->db->table('post_video')->insert($data);
+		return $query;
+	}
+
+	function insertTraingRequest($data)
+	{
+		$query = $this->db->table(' trainings')->insert($data);
 		return $query;
 	}
 
@@ -68,6 +92,27 @@ class AdminModel extends Model
 		$query = $this->db->table('leave_setting')->update($data, array('id' => $settingid));
 		return $query;
 	}
+
+	function getTotalLeavyCategorywise($user_id,$leave_type)
+	{
+		$start=date('Y').'-01-01';
+		$end=date('Y').'-12-31';
+		$result = $this->db->query("SELECT SUM(no_of_day) AS no_of_day FROM leave_details WHERE user_id = $user_id AND leave_type =$leave_type AND status = 1 AND create_at BETWEEN $start AND $end ")->getResult();
+		return $result;
+	}
+
+	function getTotalLl($user_id)
+	{
+		$result = $this->db->query("SELECT * FROM ll_details WHERE user_id = $user_id AND status = 1")->getResult();
+		return $result;
+	}
+
+	function UpdateTrainingDetails($data, $user_id)
+	{
+		$query = $this->db->table('trainingdetails')->update($data, array('training_id' => $user_id));
+		return $query;
+	}
+	
 
 
 	function Settingdata()
@@ -258,6 +303,30 @@ class AdminModel extends Model
 		return $builder->get()->getResult();
 	}
 
+	function leaveList()
+	{
+		$builder = $this->db->table('leave_details');
+		$builder->select('*');
+		$builder->join('user', 'user.id=leave_details.user_id');
+		return $builder->get()->getResult();
+	}
+
+	function llList()
+	{
+		$builder = $this->db->table('ll_details');
+		$builder->select('*');
+		$builder->join('user', 'user.id=ll_details.user_id');
+		return $builder->get()->getResult();
+	}
+
+	function idcardRequestList()
+	{
+		$builder = $this->db->table('request_idcard');
+		$builder->select('*');
+		$builder->join('user', 'user.id=request_idcard.user_id');
+		return $builder->get()->getResult();
+	}
+
 	function Company()
 	{
 		$builder = $this->db->table('company');
@@ -394,6 +463,7 @@ class AdminModel extends Model
 		$builder = $this->db->table('trainingdetails');
 		$builder->select('*');
 		$builder->join('user', 'user.id=trainingdetails.emp_id');
+		$builder->join('trainings', 'trainings.id=trainingdetails.training_topic');
 		return $builder->get()->getResult();
 	}
 
@@ -539,4 +609,46 @@ class AdminModel extends Model
 		$builder->where('user_type', $user_type);
 		return $builder->get()->getResult();
 	}
+
+
+	function getTraining()
+	{
+		$builder = $this->db->table('trainings');
+		$builder->select('*');
+		return $builder->get()->getResult();
+	}
+
+	function getUserTraingHistory($user_id)
+	{
+		$builder = $this->db->table(' trainingdetails');
+		$builder->select('*');
+		$builder->where('emp_id', $user_id);
+		return $builder->get()->getResult();
+	}
+
+	function getambulanceDetails($companyId)
+	{
+		$builder = $this->db->table('  ambulance');
+		$builder->select('*');
+		$builder->where('amb_office_id', $companyId);
+		return $builder->get()->getResult();
+	}
+
+	function getbloodBankDetails($companyId)
+	{
+		$builder = $this->db->table(' bloodbankservice');
+		$builder->select('*');
+		$builder->where('bloodbankoffice_id', $companyId);
+		return $builder->get()->getResult();
+	}
+
+	function getmedicalDetails($companyId)
+	{
+		$builder = $this->db->table(' medicalservice');
+		$builder->select('*');
+		$builder->where('medoffice_id', $companyId);
+		return $builder->get()->getResult();
+	}
+
+
 }
