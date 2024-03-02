@@ -567,6 +567,227 @@ class ApiController extends ResourceController
         return $this->respondCreated($response);
     }
 
+    public function addLike()
+    {
+        $rules = [
+            'user_id' => 'required|numeric',
+            'post_id' => 'required|numeric'
+        ];
+        if (!$this->validate($rules)) {
+            $response = [
+                'status'   => 200,
+                'error'    => 1,
+                'response' => [
+                    'message' => $this->validator->getErrors()
+                ]
+            ];
+        } else {
+            $user_id = $this->request->getVar('user_id');
+            $post_id = $this->request->getVar('post_id');
+            $userDtls = $this->AdminModel->userdata($user_id);
+            $postDtls = $this->AdminModel->postDate($post_id);
+            if (!empty($userDtls) && $userDtls != null && !empty($postDtls) && $postDtls != null) {
+
+                $data_array = [
+                    'user_id' => $user_id,
+                    'post_id' => $post_id
+                ];
+                $insert_id = $this->AdminModel->addLike($data_array);
+
+                if ($insert_id) {
+                    $response = [
+                        'status'   => 201,
+                        'error'    => null,
+                        'response' => [
+                            'success' => 'Like added Successfully'
+                        ],
+                    ];
+                } else {
+                    $response = [
+                        'status'   => 200,
+                        'error'    => 1,
+                        'response' => [
+                            'message' => 'Something went wrong!.'
+                        ]
+                    ];
+                }
+            } else {
+                $response = [
+                    'status'   => 200,
+                    'error'    => 1,
+                    'response' => [
+                        'message' => 'User or Post not found!'
+                    ]
+                ];
+            }
+        }
+        return $this->respondCreated($response);
+    }
+
+    public function addComment()
+    {
+        $rules = [
+            'user_id' => 'required|numeric',
+            'post_id' => 'required|numeric',
+            'comment' => 'required',
+        ];
+        if (!$this->validate($rules)) {
+            $response = [
+                'status'   => 200,
+                'error'    => 1,
+                'response' => [
+                    'message' => $this->validator->getErrors()
+                ]
+            ];
+        } else {
+            $user_id = $this->request->getVar('user_id');
+            $post_id = $this->request->getVar('post_id');
+            $userDtls = $this->AdminModel->userdata($user_id);
+            $postDtls = $this->AdminModel->postDate($post_id);
+            if (!empty($userDtls) && $userDtls != null && !empty($postDtls) && $postDtls != null) {
+                $comment = $this->request->getVar('comment');
+
+                $data_array = [
+                    'user_id' => $user_id,
+                    'post_id' => $post_id,
+                    'comment' => $comment
+                ];
+                $insert_id = $this->AdminModel->addComment($data_array);
+
+                if ($insert_id) {
+                    $response = [
+                        'status'   => 201,
+                        'error'    => null,
+                        'response' => [
+                            'success' => 'Comment added Successfully'
+                        ],
+                    ];
+                } else {
+                    $response = [
+                        'status'   => 200,
+                        'error'    => 1,
+                        'response' => [
+                            'message' => 'Something went wrong!.'
+                        ]
+                    ];
+                }
+            } else {
+                $response = [
+                    'status'   => 200,
+                    'error'    => 1,
+                    'response' => [
+                        'message' => 'User or Post not found!'
+                    ]
+                ];
+            }
+        }
+        return $this->respondCreated($response);
+    }
+
+    public function deleteLikeOrComment()
+    {
+        $rules = [
+            'user_id' => 'required|numeric',
+            'post_id' => 'required|numeric',
+            'type' => 'required',
+        ];
+        if (!$this->validate($rules)) {
+            $response = [
+                'status'   => 200,
+                'error'    => 1,
+                'response' => [
+                    'message' => $this->validator->getErrors()
+                ]
+            ];
+        } else {
+            $user_id = $this->request->getVar('user_id');
+            $post_id = $this->request->getVar('post_id');
+            $userDtls = $this->AdminModel->userdata($user_id);
+            $postDtls = $this->AdminModel->postDate($post_id);
+            if (!empty($userDtls) && $userDtls != null && !empty($postDtls) && $postDtls != null) {
+                $type = $this->request->getVar('type');
+                if ($type == 'like') {
+                    $insert_id = $this->AdminModel->deleteRecord('post_like',['post_id'=>$post_id,'user_id'=>$user_id]);
+                } else {
+                    $insert_id = $this->AdminModel->deleteRecord('post_comment',['post_id'=>$post_id,'user_id'=>$user_id]);
+                }
+
+                if ($insert_id) {
+                    $response = [
+                        'status'   => 201,
+                        'error'    => null,
+                        'response' => [
+                            'success' => 'Deleted Successfully'
+                        ],
+                    ];
+                } else {
+                    $response = [
+                        'status'   => 200,
+                        'error'    => 1,
+                        'response' => [
+                            'message' => 'Something went wrong!.'
+                        ]
+                    ];
+                }
+            } else {
+                $response = [
+                    'status'   => 200,
+                    'error'    => 1,
+                    'response' => [
+                        'message' => 'User or Post not found!'
+                    ]
+                ];
+            }
+        }
+        return $this->respondCreated($response);
+    }
+
+    public function getAllLikeCommentPostwise()
+    {
+        $rules = [
+            'post_id' => 'required|numeric'
+        ];
+        if (!$this->validate($rules)) {
+            $response = [
+                'status'   => 200,
+                'error'    => 1,
+                'response' => [
+                    'message' => $this->validator->getErrors()
+                ]
+            ];
+        } else {
+            $post_id = $this->request->getVar('post_id');
+            $postDtls = $this->AdminModel->postDate($post_id);
+            if (!empty($postDtls) && $postDtls != null) {
+
+
+                $allLike = $this->AdminModel->getAllLikeComment('post_like',$post_id);
+                $allComment = $this->AdminModel->getAllLikeComment('post_comment',$post_id);
+
+
+                    $response = [
+                        'status'   => 201,
+                        'error'    => null,
+                        'response' => [
+                            'success' => 'Like added Successfully',
+                            'likes' =>$allLike,
+                            'comments' =>$allComment,
+                        ],
+                    ];
+
+            } else {
+                $response = [
+                    'status'   => 200,
+                    'error'    => 1,
+                    'response' => [
+                        'message' => 'Post not found!'
+                    ]
+                ];
+            }
+        }
+        return $this->respondCreated($response);
+    }
+
     public function memeberListForApproval()
     {
         $memeberList = $this->AdminModel->GetAllUserList(2);

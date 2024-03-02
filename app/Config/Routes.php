@@ -92,6 +92,10 @@ $routes->get('api/getAllTrainingHistory', 'ApiController::getAllTrainingHistory'
 $routes->post('api/approveMemebrTraining', 'ApiController::approveMemebrTraining');
 $routes->post('api/getCompanyServiceDetails', 'ApiController::getCompanyServiceDetails');
 
+$routes->post('api/addLike', 'ApiController::addLike');
+$routes->post('api/addComment', 'ApiController::addComment');
+$routes->post('api/deleteLikeOrComment', 'ApiController::deleteLikeOrComment');
+$routes->post('api/getAllLikeCommentPostwise', 'ApiController::getAllLikeCommentPostwise');
 
 
 

@@ -33,6 +33,18 @@ class AdminModel extends Model
 		return $this->db->insertID();
 	}
 
+	function addLike($data)
+	{
+		$query = $this->db->table('post_like')->insert($data);
+		return $query;
+	}
+
+	function addComment($data)
+	{
+		$query = $this->db->table('post_comment')->insert($data);
+		return $query;
+	}
+
 	function insertLeaveDetails($data)
 	{
 		$query = $this->db->table('leave_details')->insert($data);
@@ -130,6 +142,30 @@ class AdminModel extends Model
 		$builder->where('id', $user_id);
 		return $builder->get()->getResult();
 	}
+
+	function postDate($post_id)
+	{
+		$builder = $this->db->table('post');
+		$builder->select('*');
+		$builder->where('id', $post_id);
+		return $builder->get()->getResult();
+	}
+
+	function deleteRecord($table,$where)
+	{
+		$query = $this->db->table($table)->delete($where);
+		return $query;
+	}
+
+	function getAllLikeComment($table,$post_id)
+	{
+		$builder = $this->db->table($table);
+		$builder->select('*');
+		$builder->where('post_id', $post_id);
+		return $builder->get()->getResult();
+	}
+
+
 
 	function Customerdata()
 	{
